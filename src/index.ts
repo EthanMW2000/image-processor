@@ -56,6 +56,7 @@ async function processImage(
 ): Promise<Buffer> {
   return sharp(source)
     .resize({ width, withoutEnlargement: true })
+    .withMetadata()
     .webp({ quality })
     .toBuffer();
 }
