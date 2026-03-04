@@ -108,6 +108,11 @@ dist
 # Docusaurus cache and generated files
 .docusaurus
 
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+
 # Serverless directories
 .serverless/
 

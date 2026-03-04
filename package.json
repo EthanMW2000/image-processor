@@ -1,6 +1,7 @@
 {
   "name": "image-processor",
   "version": "1.0.0",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -16,6 +17,7 @@
   "devDependencies": {
     "@types/aws-lambda": "^8.10.161",
     "@types/node": "^25.3.3",
+    "esbuild": "^0.27.3",
     "typescript": "^5.9.3"
   }
 }
