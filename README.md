@@ -1,19 +1,21 @@
 # image-processor
 
-AWS Lambda function that processes uploaded photos for the portfolio photography page.
+Personal project. AWS Lambda that automatically processes photos I upload for my photography portfolio.
 
-Triggered by S3 PUT events on `originals/` in the `ethanwells-photography` bucket. Resizes and converts images to WebP, outputting:
-- `web/` — optimized for gallery view (1600px max, 80% quality)
-- `thumbnails/` — grid previews (400px max, 75% quality)
+When I drop images into `originals/` in my S3 bucket, the Lambda resizes and converts them to WebP, outputting:
+- `web/` — optimized for gallery view (1600px wide, 80% quality)
+- `thumbnails/` — grid previews (400px wide, 75% quality)
 
 ## Stack
 
-- Node.js 20 (Lambda runtime)
+- Node.js 22 (Lambda runtime, arm64)
 - sharp (image processing)
 - AWS SDK v3 (S3 client)
 - TypeScript
+- Terraform (infrastructure)
+- GitHub Actions (CI/CD)
 
-## Setup
+## Local Setup
 
 ```
 npm install
@@ -22,17 +24,26 @@ npm install
 ## Build
 
 ```
-npx tsc
+bash scripts/build.sh
 ```
 
 ## Deploy
 
-```
-cd dist && zip -r ../function.zip . && cd ..
-zip -r function.zip node_modules/
+Pushes to `main` trigger a GitHub Actions workflow that builds and deploys via Terraform.
 
-aws lambda update-function-code \
-  --function-name image-processor \
-  --zip-file fileb://function.zip \
-  --profile personal
+To deploy manually:
+
+```
+bash scripts/build.sh
+eval "$(aws configure export-credentials --profile personal --format env)"
+cd infra && terraform init && terraform apply
+```
+
+## Backfill Existing Images
+
+To process images already in `originals/` (S3 notifications only fire on new PUTs):
+
+```
+aws s3 cp s3://ethanwells-photography/originals/ s3://ethanwells-photography/originals/ \
+  --recursive --profile personal --region us-east-2
 ```
